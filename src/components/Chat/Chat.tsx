@@ -57,6 +57,7 @@ const Chat = ({ username }: { username: string }) => {
     <div className="chatContainer">
       <CustomHeader username={username} />
       <div className="msgContainer" ref={msgScroll}>
+        <div className="fillMsgContainerTop" />
         {messages.map((msg, index) => (
           <Message
             username={username}
