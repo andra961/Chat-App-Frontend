@@ -34,14 +34,7 @@ const Message = ({
             {message.op === username ? "you" : message.op}
           </div>
         )}
-        <div
-          className="text"
-          style={{
-            textAlign: username === message.op ? "end" : "start",
-          }}
-        >
-          {message.text}
-        </div>
+        <div className="text">{message.text}</div>
       </div>
     </div>
   );

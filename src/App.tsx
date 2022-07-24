@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { generateUsername } from "unique-username-generator";
 import "./App.css";
 import Chat from "./components/Chat";
-import CustomHeader from "./components/CustomHeader";
 
 /*fallback: {
   "stream": require.resolve("stream-browserify"),

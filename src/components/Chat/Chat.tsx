@@ -10,47 +10,46 @@ import { MessageData } from "./components/Message";
 const Chat = ({ username }: { username: string }) => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageData[]>([]);
-  const [ws, setWs] = useState(
-    new WebSocket(process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080")
-  );
+  const ws = useRef<WebSocket | null>(null);
 
   const msgScroll = useRef<HTMLDivElement>(null);
+
+  const inputText = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     console.log(messages);
     msgScroll.current?.scrollBy(0, msgScroll.current?.scrollHeight);
-    console.log("scroll");
   }, [messages]);
 
   useEffect(() => {
-    ws.onopen = () => {
+    ws.current = new WebSocket(
+      process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
+    );
+
+    ws.current.onopen = () => {
       console.log("WebSocket Connected");
     };
 
-    ws.onmessage = async (e) => {
+    ws.current.onmessage = async (e) => {
       console.log("new mgs", await e.data.text());
       const message = JSON.parse(await e.data.text());
-      setMessages([...messages, message]);
+      setMessages((messages) => [...messages, message]);
     };
 
-    /*return () => {
-      ws.onclose = () => {
-        console.log("WebSocket Disconnected");
-        setWs(
-          new WebSocket(
-            process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
-          )
-        );
-      };
-    };*/
-  }, [ws.onmessage, ws.onopen, ws.onclose, messages, ws]);
+    inputText.current?.focus();
+
+    return () => {
+      ws.current?.close();
+    };
+  }, []);
 
   const onSubmit = () => {
     if (message.length === 0) return;
     const newMessage = { text: message, op: username };
-    ws.send(JSON.stringify(newMessage));
-    setMessages([...messages, newMessage]);
+    ws.current?.send(JSON.stringify(newMessage));
+    setMessages((messages) => [...messages, newMessage]);
     setMessage("");
+    inputText.current?.focus();
   };
 
   return (
@@ -79,6 +78,7 @@ const Chat = ({ username }: { username: string }) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Write a message..."
+          ref={inputText}
         />
         {message.length > 0 && (
           <BiSend onClick={onSubmit} className="sendIcon" />
