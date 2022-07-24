@@ -21,9 +21,15 @@ const Message = ({
       className="messageContainer"
       style={{
         justifyContent: username === message.op ? "flex-end" : "flex-start",
+        marginTop: showOp ? "10px" : "3px",
       }}
     >
       <div className="message">
+        {showOp && (
+          <div
+            className={username === message.op ? "rightPoint" : "leftPoint"}
+          />
+        )}
         {showOp && (
           <div
             className="op"
