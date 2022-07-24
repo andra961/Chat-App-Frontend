@@ -31,8 +31,7 @@ const Chat = ({ username }: { username: string }) => {
     };
 
     ws.current.onmessage = async (e) => {
-      console.log("new mgs", await e.data.text());
-      const message = JSON.parse(await e.data.text());
+      const message = JSON.parse(e.data);
       setMessages((messages) => [...messages, message]);
     };
 
