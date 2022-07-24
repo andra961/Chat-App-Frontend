@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { generateUsername } from "unique-username-generator";
+import "./App.css";
+import Chat from "./components/Chat";
+import CustomHeader from "./components/CustomHeader";
+
+/*fallback: {
+  "stream": require.resolve("stream-browserify"),
+  "crypto": require.resolve("crypto-browserify")
+},*/
 
 function App() {
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    let username = localStorage.getItem("username");
+    if (username === null) {
+      username = generateUsername();
+      localStorage.setItem("username", username);
+    }
+    setUsername(username);
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Chat username={username} />
     </div>
   );
 }

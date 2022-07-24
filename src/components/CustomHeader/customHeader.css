@@ -1,0 +1,11 @@
+.headerContainer {
+  display: flex;
+  flex: 0 0 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+.usernameText {
+  font-weight: bold;
+}

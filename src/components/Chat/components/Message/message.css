@@ -1,0 +1,24 @@
+.messageContainer {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 5px;
+  justify-content: flex-end;
+}
+
+.message {
+  background-color: white;
+  border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.text {
+  align-items: center;
+  font-size: 1.5rem;
+  color: black;
+}
+
+.op {
+  color: purple;
+  font-size: 0.5rem;
+}
