@@ -22,20 +22,37 @@ const Chat = ({ username }: { username: string }) => {
   }, [messages]);
 
   useEffect(() => {
-    ws.current = new WebSocket(
-      process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
-    );
+    const initializeApp = async () => {
+      try {
+        const oldMsg = await (
+          await fetch(
+            `${
+              process.env.REACT_APP_HTTP_SERVER_URL || "http://localhost:4000"
+            }/messages`
+          )
+        ).json();
+        setMessages(oldMsg);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        ws.current = new WebSocket(
+          process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
+        );
 
-    ws.current.onopen = () => {
-      console.log("WebSocket Connected");
+        ws.current.onopen = () => {
+          console.log("WebSocket Connected");
+        };
+
+        ws.current.onmessage = async (e) => {
+          const message = JSON.parse(e.data);
+          setMessages((messages) => [...messages, message]);
+        };
+
+        inputText.current?.focus();
+      }
     };
 
-    ws.current.onmessage = async (e) => {
-      const message = JSON.parse(e.data);
-      setMessages((messages) => [...messages, message]);
-    };
-
-    inputText.current?.focus();
+    initializeApp();
 
     return () => {
       ws.current?.close();
