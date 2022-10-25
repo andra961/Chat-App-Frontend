@@ -22,7 +22,7 @@ const Chat = ({ username }: { username: string }) => {
   }, [messages]);
 
   useEffect(() => {
-    const initializeApp = async () => {
+    const fetchMessages = async () => {
       try {
         const oldMsg = await (
           await fetch(
@@ -34,25 +34,25 @@ const Chat = ({ username }: { username: string }) => {
         setMessages(oldMsg);
       } catch (e) {
         console.log(e);
-      } finally {
-        ws.current = new WebSocket(
-          process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
-        );
-
-        ws.current.onopen = () => {
-          console.log("WebSocket Connected");
-        };
-
-        ws.current.onmessage = async (e) => {
-          const message = JSON.parse(e.data);
-          setMessages((messages) => [...messages, message]);
-        };
-
-        inputText.current?.focus();
       }
     };
 
-    initializeApp();
+    void fetchMessages();
+
+    ws.current = new WebSocket(
+      process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
+    );
+
+    ws.current.onopen = () => {
+      console.log("WebSocket Connected");
+    };
+
+    ws.current.onmessage = async (e) => {
+      const message = JSON.parse(e.data);
+      setMessages((messages) => [...messages, message]);
+    };
+
+    inputText.current?.focus();
 
     return () => {
       ws.current?.close();
@@ -97,7 +97,12 @@ const Chat = ({ username }: { username: string }) => {
           ref={inputText}
         />
         {message.length > 0 && (
-          <BiSend onClick={onSubmit} className="sendIcon" />
+          <button
+            style={{ border: "none", backgroundColor: "transparent" }}
+            type="submit"
+          >
+            <BiSend className="sendIcon" />
+          </button>
         )}
       </form>
     </div>
