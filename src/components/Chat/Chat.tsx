@@ -3,9 +3,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { BiSend } from "react-icons/bi";
 import CustomHeader from "../CustomHeader";
 
-import "./chat.css";
 import Message from "./components/Message";
 import { MessageData } from "./components/Message";
+
+import "react-toastify/dist/ReactToastify.min.css";
+import "./chat.css";
+import { toast, ToastContainer } from "react-toastify";
 
 const Chat = ({ username }: { username: string }) => {
   const [message, setMessage] = useState<string>("");
@@ -48,7 +51,19 @@ const Chat = ({ username }: { username: string }) => {
     };
 
     ws.current.onmessage = async (e) => {
-      const message = JSON.parse(e.data);
+      const message = JSON.parse(e.data) as MessageData;
+      if (message.op !== username) {
+        toast.info(`${message.op}: ${message.text}`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
       setMessages((messages) => [...messages, message]);
     };
 
@@ -57,7 +72,7 @@ const Chat = ({ username }: { username: string }) => {
     return () => {
       ws.current?.close();
     };
-  }, []);
+  }, [username]);
 
   const onSubmit = () => {
     if (message.length === 0) return;
@@ -104,6 +119,7 @@ const Chat = ({ username }: { username: string }) => {
             <BiSend className="sendIcon" />
           </button>
         )}
+        <ToastContainer />
       </form>
     </div>
   );
