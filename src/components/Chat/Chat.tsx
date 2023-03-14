@@ -9,6 +9,7 @@ import { MessageData } from "./components/Message";
 import "react-toastify/dist/ReactToastify.min.css";
 import "./chat.css";
 import { toast, ToastContainer } from "react-toastify";
+import messageService from "../../services/messagesService";
 
 const Chat = ({ username }: { username: string }) => {
   const [message, setMessage] = useState<string>("");
@@ -27,13 +28,7 @@ const Chat = ({ username }: { username: string }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const oldMsg = await (
-          await fetch(
-            `${
-              process.env.REACT_APP_HTTP_SERVER_URL || "http://localhost:4000"
-            }/messages`
-          )
-        ).json();
+        const oldMsg = await messageService.getMessages();
         setMessages(oldMsg);
       } catch (e) {
         console.log(e);
