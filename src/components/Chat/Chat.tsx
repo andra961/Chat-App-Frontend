@@ -38,7 +38,9 @@ const Chat = ({ username }: { username: string }) => {
     void fetchMessages();
 
     ws.current = new WebSocket(
-      process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
+      `${process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"}?ticket=${
+        localStorage.getItem("ws_ticket") || ""
+      }`
     );
 
     ws.current.onopen = () => {
@@ -71,9 +73,9 @@ const Chat = ({ username }: { username: string }) => {
 
   const onSubmit = () => {
     if (message.length === 0) return;
-    const newMessage = { text: message, op: username };
+    const newMessage = { text: message };
     ws.current?.send(JSON.stringify(newMessage));
-    setMessages((messages) => [...messages, newMessage]);
+    setMessages((messages) => [...messages, { ...newMessage, op: username }]);
     setMessage("");
     inputText.current?.focus();
   };

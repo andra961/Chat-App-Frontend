@@ -1,12 +1,14 @@
+import client from "./axios";
+
 const messageService = {
   getMessages: async () =>
     await (
-      await fetch(
+      await client.get(
         `${
           process.env.REACT_APP_HTTP_SERVER_URL || "http://localhost:4000"
         }/messages`
       )
-    ).json(),
+    ).data,
 };
 
 export default messageService;
