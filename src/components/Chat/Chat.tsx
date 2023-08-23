@@ -73,9 +73,11 @@ const Chat = ({ username }: { username: string }) => {
 
   const onSubmit = () => {
     if (message.length === 0) return;
-    const newMessage = { text: message };
+    const newMessage = { text: message, channelId: "public" };
     ws.current?.send(JSON.stringify(newMessage));
-    setMessages((messages) => [...messages, { ...newMessage, op: username }]);
+
+    //optimistic ui update
+    // setMessages((messages) => [...messages, { ...newMessage, op: username }]);
     setMessage("");
     inputText.current?.focus();
   };

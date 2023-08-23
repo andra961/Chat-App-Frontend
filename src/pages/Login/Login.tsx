@@ -23,19 +23,12 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
 
   return (
     <div>
-      <label>
-        {loginOrRegister ? "register" : "login"}
-        <input
-          type={"checkbox"}
-          checked={loginOrRegister}
-          onChange={(e) => setLoginOrRegister(e.currentTarget.checked)}
-        />
-      </label>
       {loginOrRegister ? (
         <form onSubmit={onSubmitLogin}>
           <label>
             <input
               type={"text"}
+              required
               value={username}
               onChange={(e) => setUsername(e.currentTarget.value)}
               placeholder={"username"}
@@ -44,6 +37,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
           <label>
             <input
               type={"password"}
+              required
               value={password}
               onChange={(e) => setPassword(e.currentTarget.value)}
               placeholder={"username"}
@@ -56,6 +50,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
           <label>
             <input
               type={"text"}
+              required
               value={username}
               onChange={(e) => setUsername(e.currentTarget.value)}
               placeholder={"username"}
@@ -64,6 +59,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
           <label>
             <input
               type={"password"}
+              required
               value={password}
               onChange={(e) => setPassword(e.currentTarget.value)}
               placeholder={"username"}
@@ -72,6 +68,9 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
           <button>register</button>
         </form>
       )}
+      <button onClick={() => setLoginOrRegister((old) => !old)}>
+        Go to {loginOrRegister ? "register" : "login"}
+      </button>
     </div>
   );
 };
