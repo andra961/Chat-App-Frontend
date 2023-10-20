@@ -40,7 +40,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
               required
               value={password}
               onChange={(e) => setPassword(e.currentTarget.value)}
-              placeholder={"username"}
+              placeholder={"password"}
             />
           </label>
           <button>login</button>
@@ -62,7 +62,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
               required
               value={password}
               onChange={(e) => setPassword(e.currentTarget.value)}
-              placeholder={"username"}
+              placeholder={"password"}
             />
           </label>
           <button>register</button>

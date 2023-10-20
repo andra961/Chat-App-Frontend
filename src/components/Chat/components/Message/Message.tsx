@@ -4,7 +4,7 @@ import "./message.css";
 
 export type MessageData = {
   text: string;
-  op: string;
+  senderId: string;
 };
 
 const Message = ({
@@ -20,24 +20,27 @@ const Message = ({
     <div
       className="messageContainer"
       style={{
-        justifyContent: username === message.op ? "flex-end" : "flex-start",
+        justifyContent:
+          username === message.senderId ? "flex-end" : "flex-start",
         marginTop: showOp ? "10px" : "3px",
       }}
     >
       <div className="message">
         {showOp && (
           <div
-            className={username === message.op ? "rightPoint" : "leftPoint"}
+            className={
+              username === message.senderId ? "rightPoint" : "leftPoint"
+            }
           />
         )}
         {showOp && (
           <div
-            className="op"
+            className="sender"
             style={{
-              textAlign: username === message.op ? "end" : "start",
+              textAlign: username === message.senderId ? "end" : "start",
             }}
           >
-            {message.op === username ? "you" : message.op}
+            {message.senderId === username ? "you" : message.senderId}
           </div>
         )}
         <div className="text">{message.text}</div>

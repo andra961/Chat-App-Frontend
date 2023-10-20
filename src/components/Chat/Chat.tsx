@@ -10,11 +10,15 @@ import "react-toastify/dist/ReactToastify.min.css";
 import "./chat.css";
 import { toast, ToastContainer } from "react-toastify";
 import messageService from "../../services/messagesService";
+import { useParams } from "react-router-dom";
+import authService from "../../services/authentication";
 
 const Chat = ({ username }: { username: string }) => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageData[]>([]);
   const ws = useRef<WebSocket | null>(null);
+
+  const { chatId } = useParams();
 
   const msgScroll = useRef<HTMLDivElement>(null);
 
@@ -26,9 +30,41 @@ const Chat = ({ username }: { username: string }) => {
   }, [messages]);
 
   useEffect(() => {
+    let mounted = true;
+    if (chatId === undefined) return;
+    const initWs = async () => {
+      const { ticket: ws_ticket } = await authService.getWSTicket();
+      if (!mounted) return;
+      ws.current = new WebSocket(
+        `${
+          process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
+        }?ticket=${ws_ticket}`
+      );
+
+      ws.current.onopen = () => {
+        console.log("WebSocket Connected");
+      };
+
+      ws.current.onmessage = async (e) => {
+        const message = JSON.parse(e.data) as MessageData;
+        if (message.senderId !== username) {
+          toast.info(`${message.senderId}: ${message.text}`, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+        setMessages((messages) => [...messages, message]);
+      };
+    };
     const fetchMessages = async () => {
       try {
-        const oldMsg = await messageService.getMessages();
+        const oldMsg = await messageService.getMessages(chatId);
         setMessages(oldMsg);
       } catch (e) {
         console.log(e);
@@ -36,44 +72,20 @@ const Chat = ({ username }: { username: string }) => {
     };
 
     void fetchMessages();
-
-    ws.current = new WebSocket(
-      `${process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"}?ticket=${
-        localStorage.getItem("ws_ticket") || ""
-      }`
-    );
-
-    ws.current.onopen = () => {
-      console.log("WebSocket Connected");
-    };
-
-    ws.current.onmessage = async (e) => {
-      const message = JSON.parse(e.data) as MessageData;
-      if (message.op !== username) {
-        toast.info(`${message.op}: ${message.text}`, {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      }
-      setMessages((messages) => [...messages, message]);
-    };
+    void initWs();
 
     inputText.current?.focus();
 
     return () => {
+      mounted = false;
       ws.current?.close();
     };
-  }, [username]);
+  }, [username, chatId]);
 
   const onSubmit = () => {
     if (message.length === 0) return;
-    const newMessage = { text: message, channelId: "public" };
+    if (chatId === undefined) return;
+    const newMessage = { text: message, chatId: chatId };
     ws.current?.send(JSON.stringify(newMessage));
 
     //optimistic ui update
@@ -92,7 +104,9 @@ const Chat = ({ username }: { username: string }) => {
             username={username}
             message={msg}
             key={index}
-            showOp={index === 0 || messages[index - 1].op !== msg.op}
+            showOp={
+              index === 0 || messages[index - 1].senderId !== msg.senderId
+            }
           />
         ))}
       </div>

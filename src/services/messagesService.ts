@@ -1,14 +1,21 @@
 import client from "./axios";
 
 const messageService = {
-  getMessages: async () =>
+  getMessages: async (id: string) =>
     await (
-      await client.get(
-        `${
-          process.env.REACT_APP_HTTP_SERVER_URL || "http://localhost:4000"
-        }/messages`
-      )
+      await client.get(`messages/${id}`)
     ).data,
+  getChats: async () => {
+    const resp = await client.get<
+      {
+        id: number;
+        name: string;
+        ownerId: number;
+      }[]
+    >("/chats");
+
+    return resp.data;
+  },
 };
 
 export default messageService;

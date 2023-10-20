@@ -2,6 +2,19 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-image: linear-gradient(#e66465, #9198e5);
   overflow-y: hidden;
+}
+
+.chatsWrapper {
+  display: flex;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: none;
 }

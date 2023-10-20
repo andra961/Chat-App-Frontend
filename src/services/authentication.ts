@@ -37,7 +37,7 @@ const authService = {
   getWSTicket: async () => {
     const res = await client.get<{ ticket: string }>("/ws-ticket");
 
-    localStorage.setItem("ws_ticket", res.data.ticket);
+    // localStorage.setItem("ws_ticket", res.data.ticket);
 
     return res.data;
   },

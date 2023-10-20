@@ -1,0 +1,10 @@
+.chatsContainer {
+  width: 20vw;
+}
+
+.chatsContainer li {
+  width: 100%;
+  padding: 20px;
+  background-color: white;
+  border: 1px solid lightgray;
+}

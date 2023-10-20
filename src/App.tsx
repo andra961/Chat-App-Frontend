@@ -1,48 +1,42 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  BrowserRouter,
+  Outlet,
+} from "react-router-dom";
 import Chat from "./components/Chat";
 import Login from "./pages/Login/Login";
 import "./App.css";
 import authService from "./services/authentication";
+import Chats from "./components/Chats";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const Protected = ({
-  isLoggedIn,
-  children,
-}: {
-  isLoggedIn: boolean;
-  children: ReactNode;
-}) => {
+const Protected = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
-  return <>{children}</>;
+  return (
+    <div className="chatsWrapper">
+      <Chats />
+      <Outlet />
+    </div>
+  );
 };
 
-const LoginProtected = ({
-  isLoggedIn,
-  children,
-}: {
-  isLoggedIn: boolean;
-  children: ReactNode;
-}) => {
+const LoginProtected = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   if (isLoggedIn) {
-    return <Navigate to="/chat" replace />;
+    return <Navigate to="/home" replace />;
   }
-  return <>{children}</>;
+  return <Outlet />;
 };
+
+// Create a client
+const queryClient = new QueryClient();
 
 function App() {
   const [username, setUsername] = useState<string | null>(null);
-  const [ticket, setTicket] = useState<string | null>(null);
-
-  // useEffect(() => {
-  //   let username = localStorage.getItem("username");
-  //   if (username === null) {
-  //     username = generateUsername();
-  //     localStorage.setItem("username", username);
-  //   }
-  //   setUsername(username);
-  // }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -58,40 +52,30 @@ function App() {
     void checkAuth();
   }, []);
 
-  useEffect(() => {
-    const getWsTicket = async () => {
-      const { ticket } = await authService.getWSTicket();
-      setTicket(ticket);
-    };
-
-    void getWsTicket();
-  }, [username]);
-
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <LoginProtected isLoggedIn={username !== null}>
-                <Login setUser={setUsername} />
-              </LoginProtected>
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              <Protected isLoggedIn={username !== null}>
-                {username !== null && ticket !== null && (
-                  <Chat username={username} />
-                )}
-              </Protected>
-            }
-          />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<LoginProtected isLoggedIn={username !== null} />}>
+              <Route path="/login" element={<Login setUser={setUsername} />} />
+            </Route>
+            <Route
+              path="/home"
+              element={<Protected isLoggedIn={username !== null} />}
+            >
+              <Route index element={<span>Select a chat</span>} />
+              <Route
+                path="chat/:chatId"
+                element={
+                  <>{username !== null && <Chat username={username} />}</>
+                }
+              />
+            </Route>
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
     </div>
   );
 }
