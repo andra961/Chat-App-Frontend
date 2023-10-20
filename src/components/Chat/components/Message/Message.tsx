@@ -5,6 +5,7 @@ import "./message.css";
 export type MessageData = {
   text: string;
   senderId: string;
+  chatId: string;
 };
 
 const Message = ({

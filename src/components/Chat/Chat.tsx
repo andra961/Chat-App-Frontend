@@ -59,7 +59,8 @@ const Chat = ({ username }: { username: string }) => {
             theme: "light",
           });
         }
-        setMessages((messages) => [...messages, message]);
+        if (message.chatId === chatId)
+          setMessages((messages) => [...messages, message]);
       };
     };
     const fetchMessages = async () => {
