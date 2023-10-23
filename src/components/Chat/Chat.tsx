@@ -17,6 +17,9 @@ const Chat = ({ username }: { username: string }) => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageData[]>([]);
   const ws = useRef<WebSocket | null>(null);
+  const [connected, setConnected] = useState<
+    "online" | "offline" | "connecting"
+  >("offline");
 
   const { chatId } = useParams();
 
@@ -35,6 +38,7 @@ const Chat = ({ username }: { username: string }) => {
     const initWs = async () => {
       const { ticket: ws_ticket } = await authService.getWSTicket();
       if (!mounted) return;
+      setConnected("connecting");
       ws.current = new WebSocket(
         `${
           process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
@@ -43,6 +47,14 @@ const Chat = ({ username }: { username: string }) => {
 
       ws.current.onopen = () => {
         console.log("WebSocket Connected");
+        setConnected("online");
+      };
+      ws.current.onclose = () => {
+        setConnected("offline");
+      };
+
+      ws.current.onerror = () => {
+        setConnected("offline");
       };
 
       ws.current.onmessage = async (e) => {
@@ -97,7 +109,7 @@ const Chat = ({ username }: { username: string }) => {
 
   return (
     <div className="chatContainer">
-      <CustomHeader username={username} />
+      <CustomHeader username={username} status={connected} />
       <div className="msgContainer" ref={msgScroll}>
         <div className="fillMsgContainerTop" />
         {messages.map((msg, index) => (

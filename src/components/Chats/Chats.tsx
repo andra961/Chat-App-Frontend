@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Link } from "react-router-dom";
 import messageService from "../../services/messagesService";
+import JazzIcon from "../Chat/components/JazzIcon";
+// import Jazzicon from "react-jazzicon";
 import "./chats.css";
 
 const Chats = () => {
@@ -24,7 +26,10 @@ const Chats = () => {
         <ul>
           {data.map((chat) => (
             <Link key={chat.id} to={`/home/chat/${chat.id}`}>
-              <li>{chat.name}</li>
+              <li className="chatsChatMiniature">
+                <JazzIcon diameter={30} seed={chat.id} />
+                {chat.name}
+              </li>
             </Link>
           ))}
         </ul>

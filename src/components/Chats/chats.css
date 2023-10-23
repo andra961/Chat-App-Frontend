@@ -8,3 +8,9 @@
   background-color: white;
   border: 1px solid lightgray;
 }
+
+.chatsChatMiniature {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
