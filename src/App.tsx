@@ -6,26 +6,35 @@ import {
   BrowserRouter,
   Outlet,
 } from "react-router-dom";
-import Chat from "./components/Chat";
 import Login from "./pages/Login/Login";
 import "./App.css";
 import authService from "./services/authentication";
-import Chats from "./components/Chats";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Home from "./pages/Home";
+import SelectedChat from "./pages/SelectedChat";
+import CustomHeader from "./components/CustomHeader";
+import { AuthContext, useAuthContext } from "./context/AuthContext";
 
-const Protected = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
-  if (!isLoggedIn) {
+const Protected = () => {
+  const { username } = useAuthContext();
+  if (username === null) {
     return <Navigate to="/login" replace />;
   }
+
+  // console.log(width);
+
   return (
-    <div className="chatsWrapper">
-      <Chats />
+    <>
+      <CustomHeader username={username} />
       <Outlet />
-    </div>
+    </>
   );
 };
 
-const LoginProtected = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
+const LoginProtected = () => {
+  const { username } = useAuthContext();
+
+  const isLoggedIn = Boolean(username);
   if (isLoggedIn) {
     return <Navigate to="/home" replace />;
   }
@@ -55,26 +64,32 @@ function App() {
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<LoginProtected isLoggedIn={username !== null} />}>
-              <Route path="/login" element={<Login setUser={setUsername} />} />
-            </Route>
-            <Route
-              path="/home"
-              element={<Protected isLoggedIn={username !== null} />}
-            >
-              <Route index element={<span>Select a chat</span>} />
-              <Route
-                path="chat/:chatId"
-                element={
-                  <>{username !== null && <Chat username={username} />}</>
-                }
-              />
-            </Route>
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthContext.Provider value={{ username, setUsername }}>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<LoginProtected />}>
+                <Route
+                  path="/login"
+                  element={<Login setUser={setUsername} />}
+                />
+              </Route>
+              <Route path="/home" element={<Protected />}>
+                <Route index element={<Home />} />
+                <Route
+                  path="chat/:chatId"
+                  element={
+                    <>
+                      {username !== null && (
+                        <SelectedChat username={username} />
+                      )}
+                    </>
+                  }
+                />
+              </Route>
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthContext.Provider>
       </QueryClientProvider>
     </div>
   );

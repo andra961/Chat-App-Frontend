@@ -1,12 +1,16 @@
 .chatsContainer {
-  width: 20vw;
+  min-width: 20vw;
+}
+
+.chatsContainerMobile {
+  width: 100%;
 }
 
 .chatsContainer li {
   width: 100%;
   padding: 20px;
   background-color: white;
-  border: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
 }
 
 .chatsChatMiniature {

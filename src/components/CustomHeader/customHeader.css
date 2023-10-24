@@ -1,11 +1,15 @@
 .headerContainer {
   display: flex;
-  flex: 0 0 30px;
-  height: 30px;
-  justify-content: center;
+  height: 40px;
+  justify-content: space-between;
+  padding: 0 10px;
   align-items: center;
+  border-bottom: 1px solid lightgray;
 }
 
 .usernameText {
+  display: flex;
+  align-self: center;
+  gap: 12px;
   font-weight: bold;
 }

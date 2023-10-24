@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { BiSend } from "react-icons/bi";
-import CustomHeader from "../CustomHeader";
 
 import Message from "./components/Message";
 import { MessageData } from "./components/Message";
@@ -12,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import messageService from "../../services/messagesService";
 import { useParams } from "react-router-dom";
 import authService from "../../services/authentication";
+import ChatHeader from "./components/ChatHeader";
 
 const Chat = ({ username }: { username: string }) => {
   const [message, setMessage] = useState<string>("");
@@ -46,7 +46,7 @@ const Chat = ({ username }: { username: string }) => {
       );
 
       ws.current.onopen = () => {
-        console.log("WebSocket Connected");
+        // console.log("WebSocket Connected");
         setConnected("online");
       };
       ws.current.onclose = () => {
@@ -109,7 +109,7 @@ const Chat = ({ username }: { username: string }) => {
 
   return (
     <div className="chatContainer">
-      <CustomHeader username={username} status={connected} />
+      <ChatHeader chatName="chat1" status={connected} />
       <div className="msgContainer" ref={msgScroll}>
         <div className="fillMsgContainerTop" />
         {messages.map((msg, index) => (

@@ -1,0 +1,9 @@
+.homeContainer {
+  display: flex;
+  height: 100vh;
+}
+
+.homeEmptyChat {
+  flex-grow: 1;
+  background-image: var(--chat-bg);
+}
