@@ -12,7 +12,11 @@ const Home = () => {
   return (
     <div className="homeContainer">
       <Chats />
-      {matches && <div className="homeEmptyChat" />}
+      {matches && (
+        <div className="homeEmptyChat">
+          <h3>Select a chat...</h3>
+        </div>
+      )}
     </div>
   );
 };

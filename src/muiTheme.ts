@@ -70,14 +70,9 @@ const themeOptions: ThemeOptions = {
     },
     MuiMenuItem: {
       styleOverrides: {
-        root: {
-          // '&.MuiMenuItem-divider': {
-          //     borderColor: '#b1b4b6',
-          //     color: 'blue'
-          // }
-        },
+        root: {},
         divider: {
-          borderColor: "#b1b4b6",
+          borderColor: "var(--border)",
         },
       },
     },

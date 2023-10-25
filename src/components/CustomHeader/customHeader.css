@@ -9,7 +9,7 @@
 
 .usernameText {
   display: flex;
-  align-self: center;
+  align-items: center;
   gap: 12px;
   font-weight: bold;
 }

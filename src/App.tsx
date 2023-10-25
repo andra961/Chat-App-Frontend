@@ -14,6 +14,8 @@ import Home from "./pages/Home";
 import SelectedChat from "./pages/SelectedChat";
 import CustomHeader from "./components/CustomHeader";
 import { AuthContext, useAuthContext } from "./context/AuthContext";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./muiTheme";
 
 const Protected = () => {
   const { username } = useAuthContext();
@@ -65,30 +67,32 @@ function App() {
     <div className="App">
       <QueryClientProvider client={queryClient}>
         <AuthContext.Provider value={{ username, setUsername }}>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<LoginProtected />}>
-                <Route
-                  path="/login"
-                  element={<Login setUser={setUsername} />}
-                />
-              </Route>
-              <Route path="/home" element={<Protected />}>
-                <Route index element={<Home />} />
-                <Route
-                  path="chat/:chatId"
-                  element={
-                    <>
-                      {username !== null && (
-                        <SelectedChat username={username} />
-                      )}
-                    </>
-                  }
-                />
-              </Route>
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          </BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<LoginProtected />}>
+                  <Route
+                    path="/login"
+                    element={<Login setUser={setUsername} />}
+                  />
+                </Route>
+                <Route path="/home" element={<Protected />}>
+                  <Route index element={<Home />} />
+                  <Route
+                    path="chat/:chatId"
+                    element={
+                      <>
+                        {username !== null && (
+                          <SelectedChat username={username} />
+                        )}
+                      </>
+                    }
+                  />
+                </Route>
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </ThemeProvider>
         </AuthContext.Provider>
       </QueryClientProvider>
     </div>
