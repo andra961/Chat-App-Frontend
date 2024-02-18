@@ -13,7 +13,13 @@ import { useParams } from "react-router-dom";
 import authService from "../../services/authentication";
 import ChatHeader from "./components/ChatHeader";
 
-const Chat = ({ username }: { username: string }) => {
+const Chat = ({
+  username,
+  chatName = "chat",
+}: {
+  username: string;
+  chatName?: string;
+}) => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageData[]>([]);
   const ws = useRef<WebSocket | null>(null);
@@ -109,7 +115,7 @@ const Chat = ({ username }: { username: string }) => {
 
   return (
     <div className="chatContainer">
-      <ChatHeader chatName="chat1" status={connected} />
+      <ChatHeader chatName={chatName} status={connected} />
       <div className="msgContainer" ref={msgScroll}>
         <div className="fillMsgContainerTop" />
         {messages.map((msg, index) => (

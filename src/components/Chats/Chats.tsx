@@ -32,7 +32,7 @@ const Chats = () => {
       {data !== undefined && (
         <ul>
           {data.map((chat) => (
-            <Link key={chat.id} to={`/home/chat/${chat.id}`}>
+            <Link key={chat.id} to={`/home/chat/${chat.id}?name=${chat.name}`}>
               <li className="chatsChatMiniature">
                 <JazzIcon diameter={30} seed={chat.id} />
                 {chat.name}
