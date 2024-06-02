@@ -8,24 +8,20 @@ import { MessageData } from "./components/Message";
 import "react-toastify/dist/ReactToastify.min.css";
 import "./chat.css";
 import { toast, ToastContainer } from "react-toastify";
-import messageService from "../../services/messagesService";
+import messageService, { ChatData } from "../../services/messagesService";
 import { useParams } from "react-router-dom";
 import authService from "../../services/authentication";
 import ChatHeader from "./components/ChatHeader";
+import { ConnectionStatus } from "../Status/Status";
+import { LoginData } from "../../context/AuthContext";
 
-const Chat = ({
-  username,
-  chatName = "chat",
-}: {
-  username: string;
-  chatName?: string;
-}) => {
+const Chat = ({ user, chatData }: { user: LoginData; chatData: ChatData }) => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageData[]>([]);
   const ws = useRef<WebSocket | null>(null);
-  const [connected, setConnected] = useState<
-    "online" | "offline" | "connecting"
-  >("offline");
+  const [connected, setConnected] = useState<ConnectionStatus>(
+    ConnectionStatus.Offline
+  );
 
   const { chatId } = useParams();
 
@@ -44,7 +40,7 @@ const Chat = ({
     const initWs = async () => {
       const { ticket: ws_ticket } = await authService.getWSTicket();
       if (!mounted) return;
-      setConnected("connecting");
+      setConnected(ConnectionStatus.Connecting);
       ws.current = new WebSocket(
         `${
           process.env.REACT_APP_WS_SERVER_URL || "ws://localhost:8080"
@@ -53,19 +49,19 @@ const Chat = ({
 
       ws.current.onopen = () => {
         // console.log("WebSocket Connected");
-        setConnected("online");
+        setConnected(ConnectionStatus.Online);
       };
       ws.current.onclose = () => {
-        setConnected("offline");
+        setConnected(ConnectionStatus.Offline);
       };
 
       ws.current.onerror = () => {
-        setConnected("offline");
+        setConnected(ConnectionStatus.Offline);
       };
 
       ws.current.onmessage = async (e) => {
         const message = JSON.parse(e.data) as MessageData;
-        if (message.senderId !== username) {
+        if (message.senderId !== user.username) {
           toast.info(`${message.senderId}: ${message.text}`, {
             position: "top-right",
             autoClose: 2000,
@@ -99,7 +95,7 @@ const Chat = ({
       mounted = false;
       ws.current?.close();
     };
-  }, [username, chatId]);
+  }, [user, chatId]);
 
   const onSubmit = () => {
     if (message.length === 0) return;
@@ -115,12 +111,12 @@ const Chat = ({
 
   return (
     <div className="chatContainer">
-      <ChatHeader chatName={chatName} status={connected} />
+      <ChatHeader chatData={chatData} status={connected} />
       <div className="msgContainer" ref={msgScroll}>
         <div className="fillMsgContainerTop" />
         {messages.map((msg, index) => (
           <Message
-            username={username}
+            username={user.username}
             message={msg}
             key={index}
             showOp={

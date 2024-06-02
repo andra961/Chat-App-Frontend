@@ -1,16 +1,20 @@
+import { Button } from "@mui/material";
 import React, { useState } from "react";
+import { useAuthContext } from "../../context/AuthContext";
 import authService from "../../services/authentication";
 
-const Login = ({ setUser }: { setUser: (username: string) => void }) => {
+const Login = () => {
   const [loginOrRegister, setLoginOrRegister] = useState(true);
   const [username, setUsername] = useState("");
 
   const [password, setPassword] = useState("");
 
+  const { setUser } = useAuthContext();
+
   const onSubmitLogin: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     const res = await authService.login(username, password);
-    setUser(res.username);
+    setUser(res);
   };
 
   const onSubmitRegister: React.FormEventHandler<HTMLFormElement> = async (
@@ -18,7 +22,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
   ) => {
     e.preventDefault();
     const res = await authService.register(username, password);
-    setUser(res.username);
+    setUser(res);
   };
 
   return (
@@ -43,7 +47,7 @@ const Login = ({ setUser }: { setUser: (username: string) => void }) => {
               placeholder={"password"}
             />
           </label>
-          <button>login</button>
+          <Button type="submit">login</Button>
         </form>
       ) : (
         <form onSubmit={onSubmitRegister}>

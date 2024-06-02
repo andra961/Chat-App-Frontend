@@ -1,9 +1,5 @@
+import { LoginData } from "../context/AuthContext";
 import client from "./axios";
-
-export type LoginData = {
-  username: string;
-  token: string;
-};
 
 const authService = {
   login: async (username: string, password: string) => {

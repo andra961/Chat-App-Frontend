@@ -1,6 +1,5 @@
 .chatHeaderContainer {
   display: flex;
-  gap: 50px;
   height: 40px;
   align-items: center;
   border-bottom: 1px solid lightgray;
@@ -12,8 +11,9 @@
   align-items: center;
 }
 
-.chatHeaderTitleContainer {
+.chatHeaderContainer .chatHeaderTitleContainer {
   display: flex;
+  flex: 5;
   gap: 10px;
   align-items: center;
   justify-content: center;

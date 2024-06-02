@@ -9,20 +9,32 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import "./chatHeader.css";
+import messageService, { ChatData } from "../../../../services/messagesService";
+import Status from "../../../Status";
+import { ConnectionStatus } from "../../../Status/Status";
+import { useAuthContext } from "../../../../context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ChatHeaderProps = {
-  chatName: string;
-  status: string;
+  chatData: ChatData;
+  status: ConnectionStatus;
 };
 
-const ChatHeader = ({ chatName = "chat", status }: ChatHeaderProps) => {
+const ChatHeader = ({ chatData, status }: ChatHeaderProps) => {
   const [chatMenuAnchor, setChatMenuAnchor] =
     useState<HTMLButtonElement | null>(null);
 
   const withMenuClose = getCallbackWithMenuClosure(() =>
     setChatMenuAnchor(null)
   );
+
+  const queryClient = useQueryClient();
+
+  const { user } = useAuthContext();
   const navigate = useNavigate();
+
+  if (!user) return <></>;
+
   return (
     <div className="chatHeaderContainer">
       <div>
@@ -31,8 +43,8 @@ const ChatHeader = ({ chatName = "chat", status }: ChatHeaderProps) => {
         </IconButton>
       </div>
       <div className="chatHeaderTitleContainer">
-        <h3>{chatName}</h3>
-        <span>{status}</span>
+        <Status status={status} />
+        <h3>{chatData.name}</h3>-<span>{chatData.members.length} Members</span>
       </div>
       <div>
         <IconButton onClick={(e) => setChatMenuAnchor(e.currentTarget)}>
@@ -46,24 +58,37 @@ const ChatHeader = ({ chatName = "chat", status }: ChatHeaderProps) => {
         keepMounted
         onClose={() => setChatMenuAnchor(null)}
       >
-        <MenuItem divider onClick={withMenuClose(() => console.log("add"))}>
-          <ListItemIcon>
-            <PersonAddIcon />
-          </ListItemIcon>
-          Add Members
-        </MenuItem>
-        <MenuItem divider onClick={withMenuClose(() => console.log("delete"))}>
-          <ListItemIcon>
-            <DeleteIcon />
-          </ListItemIcon>
-          Delete chat
-        </MenuItem>
-        <MenuItem divider onClick={withMenuClose(() => console.log("exit"))}>
-          <ListItemIcon>
-            <LogoutIcon />
-          </ListItemIcon>
-          Exit chat
-        </MenuItem>
+        {user.id === chatData.ownerId && (
+          <MenuItem divider onClick={withMenuClose(() => console.log("add"))}>
+            <ListItemIcon>
+              <PersonAddIcon />
+            </ListItemIcon>
+            Add Members
+          </MenuItem>
+        )}
+        {user.id === chatData.ownerId && (
+          <MenuItem
+            divider
+            onClick={withMenuClose(async () => {
+              await messageService.deleteGroup(chatData.id);
+              navigate("/home");
+              queryClient.invalidateQueries({ queryKey: ["chats"] });
+            })}
+          >
+            <ListItemIcon>
+              <DeleteIcon />
+            </ListItemIcon>
+            Delete chat
+          </MenuItem>
+        )}
+        {user.id !== chatData.ownerId && (
+          <MenuItem divider onClick={withMenuClose(() => console.log("exit"))}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            Exit chat
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );

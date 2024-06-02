@@ -16,9 +16,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 import "./customHeader.css";
 import { getCallbackWithMenuClosure } from "../../utils/menu";
+import CreateGroupModal from "../CreateGroupModal";
+import { useAuthContext } from "../../context/AuthContext";
 
 const CustomHeader = ({ username }: { username: string }) => {
   const [createChatModalOpen, setCreateChatModalOpen] = useState(false);
+  const { setUser } = useAuthContext();
 
   const [hamburgerAnchor, setHamburgerAnchor] =
     useState<HTMLButtonElement | null>(null);
@@ -50,10 +53,7 @@ const CustomHeader = ({ username }: { username: string }) => {
         keepMounted
         onClose={() => setAccountMenuAnchor(null)}
       >
-        <MenuItem
-          divider
-          onClick={withAccountMenuClose(() => setCreateChatModalOpen(true))}
-        >
+        <MenuItem divider onClick={withAccountMenuClose(() => setUser(null))}>
           <ListItemIcon>
             <LogoutIcon />
           </ListItemIcon>
@@ -76,25 +76,17 @@ const CustomHeader = ({ username }: { username: string }) => {
           </ListItemIcon>
           New Group Chat
         </MenuItem>
-        <MenuItem
-          divider
-          onClick={withHamburgerClose(() => setCreateChatModalOpen(true))}
-        >
+        <MenuItem divider>
           <ListItemIcon>
             <PersonIcon />
           </ListItemIcon>
           Direct msg
         </MenuItem>
       </Menu>
-      <ModalContainer
+      <CreateGroupModal
         isOpen={createChatModalOpen}
         onClose={() => setCreateChatModalOpen(false)}
-      >
-        <form>
-          <TextField placeholder="name" />
-          <Button>Create</Button>
-        </form>
-      </ModalContainer>
+      />
     </div>
   );
 };

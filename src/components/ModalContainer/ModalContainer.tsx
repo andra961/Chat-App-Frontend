@@ -22,17 +22,19 @@ const modalContentStyle = {
   display: "flex",
 };
 
+export type ModalContainerProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  closeOnClickAway?: boolean;
+};
+
 const ModalContainer = ({
   isOpen,
   onClose,
   children,
   closeOnClickAway = true,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  closeOnClickAway?: boolean;
-}) => {
+}: ModalContainerProps) => {
   return (
     <Modal
       open={isOpen}
